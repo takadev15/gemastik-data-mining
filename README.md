@@ -2,6 +2,10 @@
 
 Aplikasi search engine yang dibuat dengan menggunakan crawler, document ranking, dan page ranking
 
+## Sedikit Ubahan
+- Database komponennya ada yg disesuaikan
+- Berfokus kepada pencarian paragraph dan tags
+
 ## :zap: Cara Penggunaan
 
 1. Pastikan komputer/server sudah terinstall Python 3.6+ dan MySQL

@@ -132,6 +132,23 @@ class BreadthFirstSearch:
                 else:
                     keywords = keywords.get("content")
 
+                # get tags
+                # Hanya jalan untuk situs Thehill.com
+                # tags = ""
+                # try:
+                #     for tag in soup.findAll("a", attrs={"class": "tags__item"}):
+                #         tags += tag.string
+                # except Exception as e:
+                #     tags = "-"
+
+                # get article
+                # Hanya jalan untuk situs Thehill.com
+                content_article = ""
+                try:
+                    content_article = soup.find("div", attrs={"class": "article__text"}).get_text()
+                except Exception as e:
+                    content_article = ""
+
                 # isHotURL
                 hot_link = 0
 
@@ -151,6 +168,7 @@ class BreadthFirstSearch:
                     title,
                     description,
                     keywords,
+                    content_article,                    
                     complete_text,
                     hot_link,
                     size_bytes,
@@ -173,46 +191,64 @@ class BreadthFirstSearch:
                     self.lock.release()
 
                 # extract tables
+                # try:
+                #     for table in soup.findAll("table"):
+                #         self.crawl_utils.insert_page_table(db_connection, page_id, table)
+                # except:
+                #     pass
+
+                # # extract lists
+                # try:
+                #     for lists in soup.findAll("li"):
+                #         self.crawl_utils.insert_page_list(db_connection, page_id, lists)
+                # except:
+                #     pass
+
+                # # extract forms
+                # try:
+                #     for form in soup.findAll("form"):
+                #         self.crawl_utils.insert_page_form(db_connection, page_id, form)
+                # except:
+                #     pass
+
+                # # extract paragraphs
+                # try:
+                #     for paragraph in soup.findAll("p"):
+                #         self.crawl_utils.insert_page_paragraph(db_connection, page_id, paragraph)
+                # except:
+                #     pass
+                
+                # extract tags
+                # Dari thehill.com
                 try:
-                    for table in soup.findAll("table"):
-                        self.crawl_utils.insert_page_table(db_connection, page_id, table)
+                    for tag in soup.findAll("a", attrs={"class": "tags__item"}):
+                        tag_string = tag.string.replace('\t', '')
+                        tag_string = tag_string.replace('\n', '')
+                        tag_string = tag_string.lower()
+                        self.crawl_utils.insert_page_tag(db_connection, page_id, tag_string)
                 except:
                     pass
 
-                # extract lists
-                try:
-                    for lists in soup.findAll("li"):
-                        self.crawl_utils.insert_page_list(db_connection, page_id, lists)
-                except:
-                    pass
+                # try:
+                #     # extract images
+                #     for image in soup.findAll("img"):
+                #         self.crawl_utils.insert_page_image(db_connection, page_id, image)
+                # except:
+                #     pass
 
-                # extract forms
-                try:
-                    for form in soup.findAll("form"):
-                        self.crawl_utils.insert_page_form(db_connection, page_id, form)
-                except:
-                    pass
+                # try:
+                #     # extract style
+                #     for style in soup.findAll("style"):
+                #         self.crawl_utils.insert_page_style(db_connection, page_id, style)
+                # except:
+                #     pass
 
-                try:
-                    # extract images
-                    for image in soup.findAll("img"):
-                        self.crawl_utils.insert_page_image(db_connection, page_id, image)
-                except:
-                    pass
-
-                try:
-                    # extract style
-                    for style in soup.findAll("style"):
-                        self.crawl_utils.insert_page_style(db_connection, page_id, style)
-                except:
-                    pass
-
-                try:
-                    # extract script
-                    for script in soup.findAll("script"):
-                        self.crawl_utils.insert_page_script(db_connection, page_id, script)
-                except:
-                    pass
+                # try:
+                #     # extract script
+                #     for script in soup.findAll("script"):
+                #         self.crawl_utils.insert_page_script(db_connection, page_id, script)
+                # except:
+                #     pass
 
                 page_duration_crawl = time.time() - page_start_time
                 self.crawl_utils.update_page_duration_crawl(db_connection, page_id, page_duration_crawl)
