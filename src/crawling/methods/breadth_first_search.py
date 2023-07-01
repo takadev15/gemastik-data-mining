@@ -147,7 +147,7 @@ class BreadthFirstSearch:
                 try:
                     content_article = soup.find("div", attrs={"class": "article__text"}).get_text()
                 except Exception as e:
-                    content_article = ""
+                    content_article = None
 
                 # isHotURL
                 hot_link = 0
