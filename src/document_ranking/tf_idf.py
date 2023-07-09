@@ -213,6 +213,27 @@ def run_background_service():
 
     print("TFIDF Background Service - Completed.")
 
+def run_tfidf_tags():
+    db_connection = Database.connect()
+
+    # Ambil semua data custom tag halaman yang sudah di crawl ke dalam pandas dataframe
+    query = "SELECT * FROM `page_tag_information`"
+    df = pd.read_sql(query, db_connection)
+    text_content = df["content_text"]  # Konten teks dari halaman yang sudah dicrawl
+
+    # Buat model menggunakan TfidfVectorizer
+    vectorizer = TfidfVectorizer(
+        lowercase=True,  # Untuk konversi ke lower case
+        use_idf=True,  # Untuk memakai idf
+        norm="l2",  # Normalisasi
+        smooth_idf=True,  # Untuk mencegah divide-by-zero errors
+    )
+
+    tfidf_matrix = vectorizer.fit_transform(text_content)
+    words = vectorizer.get_feature_names()
+    idf_vector = vectorizer.idf_
+
+    df_tfidf = pd.DataFrame.sparse.from_spmatrix(tfidf_matrix, columns=words)
 
 def get_cosine_similarity(keyword):
 

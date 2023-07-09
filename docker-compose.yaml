@@ -1,0 +1,15 @@
+version: '3.1'
+
+services:
+  crawler-db:
+    container_name: crawler-db
+    image: mysql:5.7
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_DATABASE: 'crawl2'
+      MYSQL_USER: 'user'
+      MYSQL_PASSWORD: 'test123'
+      MYSQL_ROOT_PASSWORD: 'test123'
+    volumes:
+      - ./crawl-db:/var/lib/mysql
