@@ -155,6 +155,10 @@ class Database:
             )
             self.exec_query(
                 connection,
+                "DELETE FROM `page_tags`",
+            )
+            self.exec_query(
+                connection,
                 "DELETE FROM `page_information`",
             )
             self.exec_query(
@@ -180,7 +184,7 @@ class Database:
             )
             self.exec_query(
                 connection,
-                "CREATE TABLE `page_information` ( `id_page` int PRIMARY KEY AUTO_INCREMENT, `crawl_id` int, `url` text, `html5` tinyint, `title` text, `description` text, `keywords` text, `content_text` longtext, `hot_url` tinyint, `size_bytes` bigint, `model_crawl` text, `duration_crawl` time, `created_at` timestamp )",
+                "CREATE TABLE `page_information` ( `id_page` int PRIMARY KEY AUTO_INCREMENT, `crawl_id` int, `url` text, `html5` tinyint, `title` text, `description` text, `keywords` text, `content_article` longtext, `content_text` longtext, `hot_url` tinyint, `size_bytes` bigint, `model_crawl` text, `duration_crawl` time, `created_at` timestamp )",
             )
             self.exec_query(
                 connection,
@@ -209,6 +213,10 @@ class Database:
             self.exec_query(
                 connection,
                 "CREATE TABLE `page_forms` ( `id_form` int PRIMARY KEY AUTO_INCREMENT, `page_id` int, `form` text )",
+            )
+            self.exec_query(
+                connection,
+                "CREATE TABLE `page_tags` ( `id_tag` int PRIMARY KEY AUTO_INCREMENT, `page_id` int, `tag` text )",
             )
             self.exec_query(
                 connection,
@@ -257,6 +265,10 @@ class Database:
             self.exec_query(
                 connection,
                 "ALTER TABLE `page_forms` ADD CONSTRAINT `pageform_pageinfo` FOREIGN KEY (`page_id`) REFERENCES `page_information` (`id_page`) ON DELETE CASCADE",
+            )
+            self.exec_query(
+                connection,
+                "ALTER TABLE `page_tags` ADD CONSTRAINT `pagetag_pageinfo` FOREIGN KEY (`page_id`) REFERENCES `page_information` (`id_page`) ON DELETE CASCADE",
             )
             self.exec_query(
                 connection,
