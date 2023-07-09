@@ -176,7 +176,7 @@ def run_background_service():
     )
 
     tfidf_matrix = vectorizer.fit_transform(text_content)
-    words = vectorizer.get_feature_names()
+    words = vectorizer.get_feature_names_out()
     idf_vector = vectorizer.idf_
 
     df_tfidf = pd.DataFrame.sparse.from_spmatrix(tfidf_matrix, columns=words)
@@ -217,8 +217,10 @@ def run_tfidf_tags():
     db_connection = Database.connect()
 
     # Ambil semua data custom tag halaman yang sudah di crawl ke dalam pandas dataframe
-    query = "SELECT * FROM `page_tag_information`"
-    df = pd.read_sql(query, db_connection)
+    tags_query = "SELECT * FROM `page_tags`"
+    content_query = "SELECT * FROM `page_information`"
+
+    df = pd.read_sql(tags_query, db_connection)
     text_content = df["content_text"]  # Konten teks dari halaman yang sudah dicrawl
 
     # Buat model menggunakan TfidfVectorizer
@@ -230,10 +232,42 @@ def run_tfidf_tags():
     )
 
     tfidf_matrix = vectorizer.fit_transform(text_content)
-    words = vectorizer.get_feature_names()
+    words = vectorizer.get_feature_names.out()
     idf_vector = vectorizer.idf_
 
     df_tfidf = pd.DataFrame.sparse.from_spmatrix(tfidf_matrix, columns=words)
+
+    data_tfidf = []
+    for i in range(len(df_tfidf)):
+        page_id = df["id_page"].loc[i]
+        for j in range(len(words)):
+            word = words[j]
+            tf_idf = df_tfidf[word].loc[i]
+            if tf_idf == 0.0:
+                continue
+            idf = idf_vector[j]
+            tf = tf_idf / idf
+
+            print(f"word: {word}, page_id: {page_id}, tfidf score: {tf_idf}")
+            # Simpan setiap bobot/score pada kata ke table "tfidf_word"
+            save_one_tfidf_word(db_connection, word, page_id, tf_idf)
+            data_tfidf.append(
+                {
+                    "kata": word,
+                    "page_id": page_id,
+                    "tf": tf,
+                    "idf": idf,
+                    "tfidf": tf_idf,
+                }
+            )
+
+    new_df = pd.DataFrame(data_tfidf)
+    # new_df.to_excel("output.xlsx")
+
+    # Hapus semua hasil keyword yang sudah pernah dihitung sebelumnya pada table tfidf (keperluan API), karena bobot pada tiap kata berubah
+    remove_tfidf_rows(db_connection)
+
+    print("TFIDF Background Service - Completed.")
 
 def get_cosine_similarity(keyword):
 
@@ -252,7 +286,7 @@ def get_cosine_similarity(keyword):
     )
 
     tfidf_matrix = vectorizer.fit_transform(text_content)
-    words = vectorizer.get_feature_names()
+    words = vectorizer.get_feature_names.out()
     idf_vector = vectorizer.idf_
 
     query_tfidf_matrix = vectorizer.transform([keyword])
