@@ -143,11 +143,25 @@ class BreadthFirstSearch:
 
                 # get article
                 # Hanya jalan untuk situs Thehill.com
+                # content_article = ""
+                # try:
+                #     content_article = soup.find("div", attrs={"class": "article__text"}).get_text()
+                # except Exception as e:
+                #     content_article = None
+
+                # For farmanddairy.com 
                 content_article = ""
                 try:
-                    content_article = soup.find("div", attrs={"class": "article__text"}).get_text()
+                    content_article = soup.find("div", attrs={"class": "td-post-content"}).get_text()
                 except Exception as e:
                     content_article = None
+
+                # For farmweeknow.com
+                # content_article = ""
+                # try:
+                #     content_article = soup.find("div", attrs={"class": "asset-content"}).get_text()
+                # except Exception as e:
+                #     content_article = None
 
                 # isHotURL
                 hot_link = 0
@@ -220,14 +234,36 @@ class BreadthFirstSearch:
                 
                 # extract tags
                 # Dari thehill.com
+                # try:
+                #     for tag in soup.findAll("a", attrs={"class": "tags__item"}):
+                #         tag_string = tag.string.replace('\t', '')
+                #         tag_string = tag_string.replace('\n', '')
+                #         tag_string = tag_string.lower()
+                #         self.crawl_utils.insert_page_tag(db_connection, page_id, tag_string)
+                # except:
+                #     pass
+
+                # For farmanddiary
                 try:
-                    for tag in soup.findAll("a", attrs={"class": "tags__item"}):
+                    ul_prop = soup.find("ul", attrs={"class": "td-tags"})
+                    for tag in ul_prop.findAll("a"):
                         tag_string = tag.string.replace('\t', '')
                         tag_string = tag_string.replace('\n', '')
                         tag_string = tag_string.lower()
                         self.crawl_utils.insert_page_tag(db_connection, page_id, tag_string)
                 except:
                     pass
+
+                # For farmweeknow
+                # try:
+                #     div_prop = soup.find("div", attrs={"class": "asset-tags"})
+                #     for tag in div_prop.findAll("a"):
+                #         tag_string = tag.string.replace('\t', '')
+                #         tag_string = tag_string.replace('\n', '')
+                #         tag_string = tag_string.lower()
+                #         self.crawl_utils.insert_page_tag(db_connection, page_id, tag_string)
+                # except:
+                #     pass
 
                 # try:
                 #     # extract images
