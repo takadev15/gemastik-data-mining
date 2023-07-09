@@ -83,6 +83,7 @@ class CrawlUtils:
         title: str,
         description: str,
         keywords: str,
+        content_article: str,
         content_text: str,
         hot_url: bool,
         size_bytes: int,
@@ -100,6 +101,7 @@ class CrawlUtils:
             title (str): Judul halaman
             description (str): Deskripsi  halaman
             keywords (str): Keyword halaman
+            content_article (str): isi konten dari artikel
             content_text (str): Konten teks halaman
             hot_url (bool): Hot URL, 1 jika ya, 0 jika tidak
             size_bytes (int): Ukuran halaman dalam bytes
@@ -111,7 +113,7 @@ class CrawlUtils:
         """
         db_connection.ping()
         db_cursor = db_connection.cursor()
-        query = "INSERT INTO `page_information` (`url`, `crawl_id`, `html5`, `title`, `description`, `keywords`, `content_text`, `hot_url`, `size_bytes`, `model_crawl`, `duration_crawl`) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, SEC_TO_TIME(%s))"
+        query = "INSERT INTO `page_information` (`url`, `crawl_id`, `html5`, `title`, `description`, `keywords`, `content_article`, `content_text`, `hot_url`, `size_bytes`, `model_crawl`, `duration_crawl`) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, SEC_TO_TIME(%s))"
         db_cursor.execute(
             query,
             (
@@ -121,6 +123,7 @@ class CrawlUtils:
                 title,
                 description,
                 keywords,
+                content_article,
                 content_text,
                 hot_url,
                 size_bytes,
@@ -145,6 +148,21 @@ class CrawlUtils:
         db_cursor = db_connection.cursor()
         query = "INSERT INTO `page_forms` (`page_id`, `form`) VALUES (%s, %s)"
         db_cursor.execute(query, (page_id, form))
+        db_cursor.close()
+
+    def insert_page_tag(self, db_connection: pymysql.Connection, page_id: int, tag: str) -> None:
+        """
+        Fungsi untuk menyimpan Tag yang ada di halaman web ke dalam database.
+
+        Args:
+            db_connection (pymysql.Connection): Koneksi database MySQL
+            page_id (int): ID page dari table page_information
+            tag (str): Paragraf halaman
+        """
+        db_connection.ping()
+        db_cursor = db_connection.cursor()
+        query = "INSERT INTO `page_tags` (`page_id`, `tag`) VALUES (%s, %s)"
+        db_cursor.execute(query, (page_id, tag))
         db_cursor.close()
 
     def insert_page_image(self, db_connection: pymysql.Connection, page_id: int, image: str) -> None:
@@ -429,6 +447,7 @@ class CrawlUtils:
             page_information["title"],
             page_information["description"],
             page_information["keywords"],
+            page_information["content_article"],
             page_information["content_text"],
             page_information["hot_url"],
             page_information["size_bytes"],
