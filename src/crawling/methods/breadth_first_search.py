@@ -36,6 +36,9 @@ class BreadthFirstSearch:
         self.lock = threading.Lock()
         self.start_time: float = time.time()
         self.list_urls = []
+        self.whitelist_domain = [
+            "https://www.farmweeknow.com",
+        ]
 
     def run(self) -> None:
         """
@@ -168,7 +171,7 @@ class BreadthFirstSearch:
                     self.crawl_utils.insert_page_linking(db_connection, page_id, complete_url)
 
                     self.lock.acquire()
-                    if self.crawl_utils.is_valid_url(complete_url) and complete_url not in self.visited_urls:
+                    if self.crawl_utils.is_valid_url(complete_url) and complete_url not in self.visited_urls and url in self.whitelist_domain:
                         self.url_queue.put(complete_url)
                     self.lock.release()
 
