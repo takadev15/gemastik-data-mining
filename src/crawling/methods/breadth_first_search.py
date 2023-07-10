@@ -204,7 +204,6 @@ class BreadthFirstSearch:
                     self.crawl_utils.insert_page_linking(db_connection, page_id, complete_url)
 
                     self.lock.acquire()
-                    print(strip_domain)
                     if self.crawl_utils.is_valid_url(complete_url) and complete_url not in self.visited_urls and strip_domain in self.whitelist_domain:
                         self.url_queue.put(complete_url)
                     self.lock.release()
